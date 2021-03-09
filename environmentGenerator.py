@@ -9,6 +9,22 @@ def checkValidIndex(d, row, col):
 def checkMine(d, row, col, matrix):
     return checkValidIndex(d, row, col) and matrix[row][col] == "mine"
 
+def fillInNumbers(d, row, col, matrix):
+    matrix = [][] * d
+    for i in range(len(matrix)):
+        for j in range(len(matrix):
+            dic = {}
+            dic["safe"] = (matrix[i][j] != "mine") #whether or not if the cell is a mine or a safe
+            dic["num_Mines"] = 0 #number of mines determined by clues
+            if matrix[i][j] != "mine" 
+            dic["safe_Squares"] = 0
+            if matrix[i][j] != "mine"
+            dic["safe_Squares"] += 1
+            dic["discovered_mines"] = 0
+            dic["hidden_squares"] = 0
+    
+    return matrix
+
 #generate a d x d environment with n mines in it
 def generate(d, n):
     minesRemaining = n
