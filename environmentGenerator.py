@@ -9,23 +9,95 @@ def checkValidIndex(d, row, col):
 def checkMine(d, row, col, matrix):
     return checkValidIndex(d, row, col) and matrix[row][col] == "mine"
 
-def fillInNumbers(d, row, col, matrix):
-    matrix = [][] * d
+#make a matrix of information for each index
+def fillInInfo(matrix, d):
+    matrix = []
     for i in range(len(matrix)):
-        for j in range(len(matrix):
+        toAdd = []
+        for j in range(len(matrix)):
             dic = {}
-            dic["safe"] = (matrix[i][j] != "mine") #whether or not if the cell is a mine or a safe
-            dic["num_Mines"] = 0 #number of mines determined by clues
-            if matrix[i][j] != "mine" 
-            dic["safe_Squares"] = 0
-            if matrix[i][j] != "mine"
-            dic["safe_Squares"] += 1
-            dic["discovered_mines"] = 0
-            dic["hidden_squares"] = 0
+
+            #keep track of whether or not the square has been directly searched yet
+            dic["hidden"] = True
+
+            #–whether or not it is a mine or safe (or currently covered)
+            dic["safe"] = (matrix[i][j] != "mine") 
+
+            #if safe, the number of mines surrounding it indicated by the clue
+            dic["surrounding_clued_mines"] = ""
+            if not dic["safe"]:
+                dic["surrounding_clued_mines"] = "square_not_safe"
+            else:
+                dic["surrounding_clued_mines"] = 0
+                #TODO find out what the clue means and increment this as appropriate
+
+            #the number of safe squares identified around it, and number of mines around. also fill in hidden squares by counting valid squares around index
+            dic["surrounding_safe_squares"] = 0
+            dic["surrounding_mines"] = 0
+            dic["surrounding_hidden_squares"] = 0
+
+            #northwest
+            if checkValidIndex(d, i-1, j-1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i-1][j-1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #west
+            if checkValidIndex(d, i, j-1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i][j-1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #southwest
+            if checkValidIndex(d, i+1, j-1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i+1][j-1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #north
+            if checkValidIndex(d, i-1, j):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i-1][j] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #south
+            if checkValidIndex(d, i+1, j):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i+1][j] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #northesat
+            if checkValidIndex(d, i-1, j+1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i-1][j+1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #east
+            if checkValidIndex(d, i, j+1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i][j+1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+            #southeast
+            if checkValidIndex(d, i+1, j+1):
+                dic["surrounding_hidden_squares"]+=1
+                if matrix[i+1][j+1] == "mine":
+                    dic["surrounding_mines"]+=1
+                else:
+                    dic["surrounding_safe_squares"]+=1
+
+            toAdd.append(dic)
     
     return matrix
 
-#generate a d x d environment with n mines in it
+#generate a d x d environment with n mines in it.  only places mines, does not put in numbers yet.
 def generate(d, n):
     minesRemaining = n
     toReturn = []
@@ -34,7 +106,6 @@ def generate(d, n):
         for j in range(d):
             addLine.append(0)
         toReturn.append(addLine)
-
 
     cease = False
     while minesRemaining > 0:
