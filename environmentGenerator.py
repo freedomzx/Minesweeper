@@ -7,7 +7,7 @@ def checkValidIndex(d, row, col):
     
 #check if an index is a mine
 def checkMine(d, row, col, matrix):
-    return checkValidIndex(d, row, col) and matrix[row][col] == "mine"
+    return checkValidIndex(d, row, col) and matrix[row][col] == "m"
 
 #make a matrix of information for each index
 def fillInInfo(matrix, d):
@@ -21,15 +21,14 @@ def fillInInfo(matrix, d):
             dic["hidden"] = True
 
             #–whether or not it is a mine or safe (or currently covered)
-            dic["safe"] = (matrix[i][j] != "mine") 
+            dic["safe"] = (matrix[i][j] != "m") 
 
             #if safe, the number of mines surrounding it indicated by the clue
             dic["surrounding_clued_mines"] = ""
             if not dic["safe"]:
                 dic["surrounding_clued_mines"] = "square_not_safe"
             else:
-                dic["surrounding_clued_mines"] = 0
-                #TODO find out what the clue means and increment this as appropriate
+                dic["surrounding_clued_mines"] = matrix[i][j]
 
             #the number of safe squares identified around it, and number of mines around. also fill in hidden squares by counting valid squares around index
             dic["surrounding_safe_squares"] = 0
@@ -39,61 +38,62 @@ def fillInInfo(matrix, d):
             #northwest
             if checkValidIndex(d, i-1, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j-1] == "mine":
+                if matrix[i-1][j-1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #west
             if checkValidIndex(d, i, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i][j-1] == "mine":
+                if matrix[i][j-1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #southwest
             if checkValidIndex(d, i+1, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j-1] == "mine":
+                if matrix[i+1][j-1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #north
             if checkValidIndex(d, i-1, j):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j] == "mine":
+                if matrix[i-1][j] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #south
             if checkValidIndex(d, i+1, j):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j] == "mine":
+                if matrix[i+1][j] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #northesat
             if checkValidIndex(d, i-1, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j+1] == "mine":
+                if matrix[i-1][j+1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #east
             if checkValidIndex(d, i, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i][j+1] == "mine":
+                if matrix[i][j+1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
             #southeast
             if checkValidIndex(d, i+1, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j+1] == "mine":
+                if matrix[i+1][j+1] == "m":
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
 
             toAdd.append(dic)
+        matrix.append(toAdd)
     
     return matrix
 
@@ -115,32 +115,32 @@ def generate(d, n):
             if cease:
                 break
             for j in range(d):
-                if toReturn[i][j] != "mine" and random.randint(1, 100) <= 5:
+                if toReturn[i][j] != "m" and random.randint(1, 100) <= 5:
                     #fill in mines by chance, update numbers of indices surrounding the mine
-                    toReturn[i][j] = "mine"
+                    toReturn[i][j] = "m"
                     #northwest
-                    if checkValidIndex(d, i-1, j-1) and toReturn[i-1][j-1] != "mine":
+                    if checkValidIndex(d, i-1, j-1) and toReturn[i-1][j-1] != "m":
                         toReturn[i-1][j-1]+=1
                     #west
-                    if checkValidIndex(d, i, j-1) and toReturn[i][j-1] != "mine":
+                    if checkValidIndex(d, i, j-1) and toReturn[i][j-1] != "m":
                         toReturn[i][j-1]+=1
                     #southwest
-                    if checkValidIndex(d, i+1, j-1) and toReturn[i+1][j-1] != "mine":
+                    if checkValidIndex(d, i+1, j-1) and toReturn[i+1][j-1] != "m":
                         toReturn[i+1][j-1]+=1
                     #north
-                    if checkValidIndex(d, i-1, j) and toReturn[i-1][j] != "mine":
+                    if checkValidIndex(d, i-1, j) and toReturn[i-1][j] != "m":
                         toReturn[i-1][j]+=1
                     #south
-                    if checkValidIndex(d, i+1, j) and toReturn[i+1][j] != "mine":
+                    if checkValidIndex(d, i+1, j) and toReturn[i+1][j] != "m":
                         toReturn[i+1][j]+=1
                     #northesat
-                    if checkValidIndex(d, i-1, j+1) and toReturn[i-1][j+1] != "mine":
+                    if checkValidIndex(d, i-1, j+1) and toReturn[i-1][j+1] != "m":
                         toReturn[i-1][j+1]+=1
                     #east
-                    if checkValidIndex(d, i, j+1) and toReturn[i][j+1] != "mine":
+                    if checkValidIndex(d, i, j+1) and toReturn[i][j+1] != "m":
                         toReturn[i][j+1]+=1
                     #southeast
-                    if checkValidIndex(d, i+1, j+1) and toReturn[i+1][j+1] != "mine":
+                    if checkValidIndex(d, i+1, j+1) and toReturn[i+1][j+1] != "m":
                         toReturn[i+1][j+1]+=1
                     minesRemaining -= 1
                     if minesRemaining == 0:
@@ -150,10 +150,6 @@ def generate(d, n):
 
     return toReturn
 
-#fill the matrix indices with how many mines are around that index, return a list of information for each index
-def setMineNumbers(matrix):
-    pass
-
 def printMatrix(matrix):
     for i in range(len(matrix)):
         for j in range(len(matrix)):
@@ -161,7 +157,7 @@ def printMatrix(matrix):
         print("\n")
 
 def checkNeighbor(row, col, matrix):
-    if matrix[row][col]["surrounding_clued_mines"] - matrix[row][col]["square_not_safe"] == matrix[row][col]["surrounding_hidden_squares"]
+    if matrix[row][col]["surrounding_clued_mines"] - matrix[row][col]["square_not_safe"] == matrix[row][col]["surrounding_hidden_squares"]:
         #northwest
         if checkValidIndex(matrix, row-1, col-1) and matrix[row-1][col-1]["hidden"] :
             matrix[row-1][col-1]["safe"] = False
@@ -187,7 +183,7 @@ def checkNeighbor(row, col, matrix):
         if checkValidIndex(matrix, row+1, col+1) and matrix[row+1][col+1]["hidden"] :
             matrix[row+1][col+1]["safe"] = False
 
-    if matrix[row][col]["surrounding_safe_squares"] - matrix[row][col]["surrounding_safe_squares"] == matrix[row][col]["surrounding_hidden_squares"]
+    if matrix[row][col]["surrounding_safe_squares"] - matrix[row][col]["surrounding_safe_squares"] == matrix[row][col]["surrounding_hidden_squares"]:
          #northwest
         if checkValidIndex(matrix, row-1, col-1) and matrix[row-1][col-1]["hidden"] :
             matrix[row-1][col-1]["safe"] = True
@@ -212,5 +208,3 @@ def checkNeighbor(row, col, matrix):
         #southeast
         if checkValidIndex(matrix, row+1, col+1) and matrix[row+1][col+1]["hidden"] :
             matrix[row+1][col+1]["safe"] = True
-
-printMatrix(generate(5, 5))
