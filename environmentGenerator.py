@@ -160,4 +160,56 @@ def printMatrix(matrix):
             print(str(matrix[i][j]) + " ", end='')
         print("\n")
 
+def checkNeighbor(row, col, matrix):
+    if matrix[row][col]["surrounding_clued_mines"] - matrix[row][col]["square_not_safe"] == matrix[row][col]["surrounding_hidden_squares"]
+        #northwest
+        if checkValidIndex(matrix, row-1, col-1):
+            matrix[row-1][col-1]["safe"] = False
+        #west
+        if checkValidIndex(matrix, row, col-1):
+            matrix[row-1][col-1]["safe"] = False
+        #southwest
+        if checkValidIndex(matrix, row+1, col-1):
+            matrix[row-1][col-1]["safe"] = False
+        #north
+        if checkValidIndex(matrix, row-1, col):
+            matrix[row-1][col-1]["safe"] = False
+        #south
+        if checkValidIndex(matrix, row+1, col):
+            matrix[row-1][col-1]["safe"] = False
+        #northesat
+        if checkValidIndex(matrix, row-1, col+1):
+            matrix[row-1][col-1]["safe"] = False
+        #east
+        if checkValidIndex(matrix, row, col+1):
+            matrix[row-1][col-1]["safe"] = False
+        #southeast
+        if checkValidIndex(matrix, row+1, col+1):
+            matrix[row-1][col-1]["safe"] = False
+    if matrix[row][col]["surrounding_safe_squares"] - matrix[row][col]["surrounding_safe_squares"] == matrix[row][col]["surrouding_hidden_squares"]
+        #northwest
+        if checkValidIndex(matrix, row-1, col-1):
+            matrix[row-1][col-1]["safe"] = True
+        #west
+        if checkValidIndex(matrix, row, col-1):
+            matrix[row-1][col-1]["safe"] = True
+        #southwest
+        if checkValidIndex(matrix, row+1, col-1):
+            matrix[row-1][col-1]["safe"] = True
+        #north
+        if checkValidIndex(matrix, row-1, col):
+            matrix[row-1][col-1]["safe"] = True
+        #south
+        if checkValidIndex(matrix, row+1, col):
+            matrix[row-1][col-1]["safe"] = True
+        #northesat
+        if checkValidIndex(matrix, row-1, col+1):
+            matrix[row-1][col-1]["safe"] = True
+        #east
+        if checkValidIndex(matrix, row, col+1):
+            matrix[row-1][col-1]["safe"] = True
+        #southeast
+        if checkValidIndex(matrix, row+1, col+1):
+            matrix[row-1][col-1]["safe"] = True
+
 printMatrix(generate(5, 5))
