@@ -11,7 +11,7 @@ def checkMine(d, row, col, matrix):
 
 #make a matrix of information for each index
 def fillInInfo(matrix, d):
-    matrix = []
+    toReturn = []
     for i in range(len(matrix)):
         toAdd = []
         for j in range(len(matrix)):
@@ -91,11 +91,10 @@ def fillInInfo(matrix, d):
                     dic["surrounding_mines"]+=1
                 else:
                     dic["surrounding_safe_squares"]+=1
-
             toAdd.append(dic)
-        matrix.append(toAdd)
-    
-    return matrix
+        toReturn.append(toAdd)
+
+    return toReturn
 
 #generate a d x d environment with n mines in it.  only places mines, does not put in numbers yet.
 def generate(d, n):
