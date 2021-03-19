@@ -18,15 +18,13 @@ def fillInInfo(matrix, d):
             dic = {}
 
             #keep track of whether or not the square has been directly searched yet
-            dic["hidden"] = True
-
-            #–whether or not it is a mine or safe (or currently covered)
-            dic["safe"] = (matrix[i][j] != "m") 
+            dic["safe"] = "inconclusive"
+            dic["status"] = "unqueried"
 
             #if safe, the number of mines surrounding it indicated by the clue
             dic["surrounding_clued_mines"] = ""
-            if not dic["safe"]:
-                dic["surrounding_clued_mines"] = "square_not_safe"
+            if matrix[i][j] == "m":
+                dic["surrounding_clued_mines"] = "m"
             else:
                 dic["surrounding_clued_mines"] = matrix[i][j]
 
@@ -38,59 +36,27 @@ def fillInInfo(matrix, d):
             #northwest
             if checkValidIndex(d, i-1, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j-1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #west
             if checkValidIndex(d, i, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i][j-1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #southwest
             if checkValidIndex(d, i+1, j-1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j-1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #north
             if checkValidIndex(d, i-1, j):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #south
             if checkValidIndex(d, i+1, j):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #northesat
             if checkValidIndex(d, i-1, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i-1][j+1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #east
             if checkValidIndex(d, i, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i][j+1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             #southeast
             if checkValidIndex(d, i+1, j+1):
                 dic["surrounding_hidden_squares"]+=1
-                if matrix[i+1][j+1] == "m":
-                    dic["surrounding_mines"]+=1
-                else:
-                    dic["surrounding_safe_squares"]+=1
             toAdd.append(dic)
         toReturn.append(toAdd)
 
@@ -156,54 +122,54 @@ def printMatrix(matrix):
         print("\n")
 
 def checkNeighbor(row, col, matrix):
-    if matrix[row][col]["surrounding_clued_mines"] - matrix[row][col]["square_not_safe"] == matrix[row][col]["surrounding_hidden_squares"]:
+    if matrix[row][col]["surrounding_clued_mines"] - matrix[row][col]["surrounding_mines"] == matrix[row][col]["surrounding_hidden_squares"]:
         #northwest
-        if checkValidIndex(matrix, row-1, col-1) and matrix[row-1][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col-1):
             matrix[row-1][col-1]["safe"] = False
         #west
-        if checkValidIndex(matrix, row, col-1) and matrix[row][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row, col-1):
             matrix[row][col-1]["safe"] = False
         #southwest
-        if checkValidIndex(matrix, row+1, col-1) and matrix[row+1][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col-1):
             matrix[row+1][col-1]["safe"] = False
         #north
-        if checkValidIndex(matrix, row-1, col) and matrix[row-1][col]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col):
             matrix[row-1][col]["safe"] = False
         #south
-        if checkValidIndex(matrix, row+1, col) and matrix[row+1][col]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col):
             matrix[row+1][col]["safe"] = False
         #northesat
-        if checkValidIndex(matrix, row-1, col+1) and matrix[row-1][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col+1):
             matrix[row-1][col+1]["safe"] = False
         #east
-        if checkValidIndex(matrix, row, col+1) and matrix[row][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row, col+1):
             matrix[row][col+1]["safe"] = False
         #southeast
-        if checkValidIndex(matrix, row+1, col+1) and matrix[row+1][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col+1) :
             matrix[row+1][col+1]["safe"] = False
 
-    if matrix[row][col]["surrounding_safe_squares"] - matrix[row][col]["surrounding_safe_squares"] == matrix[row][col]["surrounding_hidden_squares"]:
+    if (8 - matrix[row][col]["surrounding_clued_mines"]) - matrix[row][col]["surrounding_safe_squares"] == matrix[row][col]["surrounding_hidden_squares"]:
          #northwest
-        if checkValidIndex(matrix, row-1, col-1) and matrix[row-1][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col-1):
             matrix[row-1][col-1]["safe"] = True
         #west
-        if checkValidIndex(matrix, row, col-1) and matrix[row][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row, col-1):
             matrix[row][col-1]["safe"] = True
         #southwest
-        if checkValidIndex(matrix, row+1, col-1) and matrix[row+1][col-1]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col-1):
             matrix[row+1][col-1]["safe"] = True
         #north
-        if checkValidIndex(matrix, row-1, col) and matrix[row-1][col]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col):
             matrix[row-1][col]["safe"] = True
         #south
-        if checkValidIndex(matrix, row+1, col) and matrix[row+1][col]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col):
             matrix[row+1][col]["safe"] = True
         #northesat
-        if checkValidIndex(matrix, row-1, col+1) and matrix[row-1][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row-1, col+1):
             matrix[row-1][col+1]["safe"] = True
         #east
-        if checkValidIndex(matrix, row, col+1) and matrix[row][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row, col+1):
             matrix[row][col+1]["safe"] = True
         #southeast
-        if checkValidIndex(matrix, row+1, col+1) and matrix[row+1][col+1]["hidden"] :
+        if checkValidIndex(len(matrix), row+1, col+1):
             matrix[row+1][col+1]["safe"] = True
