@@ -1,7 +1,7 @@
 from environmentGenerator import *
 from basicagent import *
 
-board = generate(16, 40)
+board = generate(10, 20)
 basicagent(board)
 # board = generate(2, 1)
 # info = fillInInfo(board, 2)
