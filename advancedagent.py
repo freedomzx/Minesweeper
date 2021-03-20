@@ -194,3 +194,20 @@ def advancedagent(matrix):
             break
 
     print(goodQueries / totalQueries)
+
+#returns a random hidden cell
+def findRandomHidden(info):
+    randomList = []
+    for i in range(len(info)):
+        for j in range(len(info)):
+            if info[i][j]["safe"] == "inconclusive" and info[i][j]["status"] == "unqueried":
+                randomList.append((i, j))
+
+    if not randomList:
+        #print("returned done")
+        return "done"
+
+    else:
+        num = random.randint(0, len(randomList)-1)
+        #print("returned" + " " + str(randomList[num]))
+        return randomList[num]
