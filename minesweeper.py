@@ -2,9 +2,9 @@ from environmentGenerator import *
 from basicagent import *
 from advancedagent import *
 
-board = generate(3, 2)
-print(board)
-basicagent(board, 2)
+board = generate(16, 40)
+printMatrix(board)
+basicagent(board, 40)
 #advancedagent(board)
 
 # basicTotal = 0

@@ -31,46 +31,55 @@ def basicagent(matrix, mines):
         
         if matrix[row][col] != "m":
             #check if every remaining neighbor is a mine
-            if (info[row][col]["clue"] - info[row][col]["revealed_mines"]) == info[row][col]["hidden_neighbors"]:
+            if (info[row][col]["clue"] - info[row][col]["revealed_mines"]) == info[row][col]["hidden_neighbors"] and info[row][col]["hidden_neighbors"] != 0:
                 neighbors = getNeighbors(info, row, col)
-                print(str((row, col)) + " has all mines - Hidden Neighbors: " + str(info[row][col]["hidden_neighbors"]) + " Mines: " + str(info[row][col]["revealed_mines"]) + " Safe: " + str(info[row][col]["revealed_safe"]))
+                info[row][col]["hidden_neighbors"] = 0
+                #print(str((row, col)) + " has all mines - Hidden Neighbors: " + str(info[row][col]["hidden_neighbors"]) + " - Mines: " + str(info[row][col]["revealed_mines"]) + " - Safe: " + str(info[row][col]["revealed_safe"]) + " - Clue: " + str(info[row][col]["clue"]))
                 for n in neighbors:
                     nrow = n[0]
                     ncol = n[1]
                     #print(str(nrow) + " " + str(ncol))
                     if info[nrow][ncol]["safe"] == "inconclusive" and info[nrow][ncol]["status"] == "unqueried":
+                        #print(str((nrow, ncol)) + " flagged as a new mine")
                         info[nrow][ncol]["safe"] = False
                         info[nrow][ncol]["status"] = "flagged"
                         flags += 1
                         totalQueries += 1
+                        info[row][col]["revealed_mines"] += 1
                         #let neighbors know of this change
                         far = getNeighbors(info, nrow, ncol)
                         for f in far:
                             frow = f[0]
                             fcol = f[1]
+                            #print(str((frow, fcol)) + " updated for " + str((nrow, ncol)))
                             info[frow][fcol]["hidden_neighbors"] -= 1
                             info[frow][fcol]["revealed_mines"] += 1
 
             #check if every neighbor is safe
-            if (len(getNeighbors(info, row, col)) - info[row][col]["clue"] - info[row][col]["revealed_safe"]) == info[row][col]["hidden_neighbors"]:
+            if (len(getNeighbors(info, row, col)) - info[row][col]["clue"] - info[row][col]["revealed_safe"]) == info[row][col]["hidden_neighbors"] and info[row][col]["hidden_neighbors"] != 0:
                 neighbors = getNeighbors(info, row, col)
-                print(str((row, col)) + " has all safe - Hidden Neighbors: " + str(info[row][col]["hidden_neighbors"]) + " Mines: " + str(info[row][col]["revealed_mines"]) + " Safe: " + str(info[row][col]["revealed_safe"]))
+                info[row][col]["hidden_neighbors"] = 0
+                #print(str((row, col)) + " has all safe - Hidden Neighbors: " + str(info[row][col]["hidden_neighbors"]) + " - Mines: " + str(info[row][col]["revealed_mines"]) + " - Safe: " + str(info[row][col]["revealed_safe"]) + " - Clue: " + str(info[row][col]["clue"]))
                 for n in neighbors:
                     nrow = n[0]
                     ncol = n[1]
                     if info[nrow][ncol]["safe"] == "inconclusive" and info[nrow][ncol]["status"] == "unqueried":
+                        #print(str((nrow, ncol)) + " flagged as a new safe")
                         info[nrow][ncol]["safe"] = True
                         info[nrow][ncol]["status"] = "in queue"
                         safeQueue.append((nrow, ncol))
+                        info[row][col]["revealed_safe"] += 1
                         #let neighbors know new safe
                         far = getNeighbors(info, nrow, ncol) 
                         for f in far:
                             frow = f[0]
                             fcol = f[1]
+                            #print(str((frow, fcol)) + " updated for " + str((nrow, ncol)))
                             info[frow][fcol]["hidden_neighbors"] -= 1
                             info[frow][fcol]["revealed_safe"] += 1
 
         if matrix[row][col] == "m":
+            #print(str((row, col)) + "exploded")
             info[row][col]["safe"] = False
             info[row][col]["status"] = "queried"
             explosions += 1
@@ -79,10 +88,13 @@ def basicagent(matrix, mines):
             for n in neighbors:
                 nrow = n[0]
                 ncol = n[1]
+                #print(str((nrow, ncol)) + " updated for boom", end = ' ')
                 info[nrow][ncol]["hidden_neighbors"] -= 1
                 info[nrow][ncol]["revealed_mines"] += 1
+            #print("\n")
 
         else:
+            #print(str((row, col)) + " was safe")
             wasQueried = False
             if info[row][col]["status"] == "in queue":
                 wasQueried = True
@@ -95,8 +107,10 @@ def basicagent(matrix, mines):
                 for n in neighbors:
                     nrow = n[0]
                     ncol = n[1]
+                    #print(str((nrow, ncol)) + " updated for safe", end = ' ')
                     info[nrow][ncol]["hidden_neighbors"] -= 1
                     info[nrow][ncol]["revealed_safe"] += 1
+                #print("\n")
                     
 
     print("Success rate: " + str(flags / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(flags) + "\nTotal Queries: " + str(totalQueries))

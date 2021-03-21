@@ -32,7 +32,7 @@ def getNeighbors(info, row, col):
         toReturn.append((row, col+1))
     #southeast
     if checkValidIndex(d, row+1, col+1):
-        toReturn.append((row+1, row+1))
+        toReturn.append((row+1, col+1))
 
     return toReturn
 
