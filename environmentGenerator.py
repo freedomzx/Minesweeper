@@ -4,10 +4,37 @@ import pygame
 #check if an index is within the matrix
 def checkValidIndex(d, row, col):
     return (row >= 0 and row < d) and (col >= 0 and col < d)
-    
-#check if an index is a mine
-def checkMine(d, row, col, matrix):
-    return checkValidIndex(d, row, col) and matrix[row][col] == "m"
+
+def getNeighbors(info, row, col):
+    toReturn = []
+    d = len(info)
+
+    #northwest
+    if checkValidIndex(d, row-1, col-1):
+        toReturn.append((row-1, col-1))
+    #west
+    if checkValidIndex(d, row, col-1):
+        toReturn.append((row, col-1))
+    #southwest
+    if checkValidIndex(d, row+1, col-1):
+        toReturn.append((row+1, col-1))
+    #north
+    if checkValidIndex(d, row-1, col):
+        toReturn.append((row-1, col))
+    #south
+    if checkValidIndex(d, row+1, col):
+        toReturn.append((row+1, col))
+    #northesat
+    if checkValidIndex(d, row-1, col+1):
+        toReturn.append((row-1, col+1))
+    #east
+    if checkValidIndex(d, row, col+1):
+        toReturn.append((row, col+1))
+    #southeast
+    if checkValidIndex(d, row+1, col+1):
+        toReturn.append((row+1, row+1))
+
+    return toReturn
 
 #make a matrix of information for each index
 def fillInInfo(matrix, d):
@@ -22,41 +49,46 @@ def fillInInfo(matrix, d):
             dic["status"] = "unqueried"
 
             #if safe, the number of mines surrounding it indicated by the clue
-            dic["surrounding_clued_mines"] = ""
+            dic["clue"] = ""
             if matrix[i][j] == "m":
-                dic["surrounding_clued_mines"] = "m"
+                dic["clue"] = "m"
             else:
-                dic["surrounding_clued_mines"] = matrix[i][j]
+                dic["clue"] = matrix[i][j]
 
             #the number of safe squares identified around it, and number of mines around. also fill in hidden squares by counting valid squares around index
-            dic["surrounding_safe_squares"] = 0
-            dic["surrounding_mines"] = 0
-            dic["surrounding_hidden_squares"] = 0
-
+            dic["revealed_safe"] = 0
+            dic["revealed_mines"] = 0
+            dic["hidden_neighbors"] = 0
             #northwest
             if checkValidIndex(d, i-1, j-1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #west
             if checkValidIndex(d, i, j-1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #southwest
             if checkValidIndex(d, i+1, j-1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #north
             if checkValidIndex(d, i-1, j):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #south
             if checkValidIndex(d, i+1, j):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #northesat
             if checkValidIndex(d, i-1, j+1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #east
             if checkValidIndex(d, i, j+1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
             #southeast
             if checkValidIndex(d, i+1, j+1):
-                dic["surrounding_hidden_squares"]+=1
+                dic["hidden_neighbors"]+=1
+
+
+            #FOR USE IN ADVANCED AGENT
+            dic["mines_set"] = set()
+            dic["complete"] = False
+
             toAdd.append(dic)
         toReturn.append(toAdd)
 

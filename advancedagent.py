@@ -25,17 +25,18 @@ def advancedagent(matrix):
             nextCell = safeQueue.pop()
 
         if nextCell == "done":
-            print(str(totalQueries) + " vs. " + str(totalCells))
+            #print(str(totalQueries) + " vs. " + str(totalCells))
             break
+
 
         row = nextCell[0]
         col = nextCell[1]
         #print(str(row) + " " + str(col))
  
-        #TODO surrounding_clued_mines is 'm' if its a mine instead of a number
         #check if we need to make all neighbors safe/flag all neighbors as mines, increment totalQueries or push into safeQueue as necessary
         if matrix[row][col] != 'm':
             if (info[row][col]["surrounding_clued_mines"] - info[row][col]["surrounding_mines"] == info[row][col]["surrounding_hidden_squares"]):
+                info[row][col]["complete"] = True
                 #northwest
                 if checkValidIndex(d, row-1, col-1) and info[row-1][col-1]["status"] == "unqueried":
                     info[row-1][col-1]["safe"] = False
@@ -77,6 +78,7 @@ def advancedagent(matrix):
                     info[row+1][col+1]["status"] = "flagged"
                     totalQueries += 1
             elif ((8 - info[row][col]["surrounding_clued_mines"]) - info[row][col]["surrounding_safe_squares"] == info[row][col]["surrounding_hidden_squares"]):
+                info[row][col]["complete"] = True
                 #northwest
                 if checkValidIndex(d, row-1, col-1) and info[row-1][col-1]["status"] == "unqueried":
                     info[row-1][col-1]["safe"] = True
@@ -111,7 +113,7 @@ def advancedagent(matrix):
                     safeQueue.append((row+1, col+1))
         #boom
         if matrix[row][col] == "m":
-            print("BOOM", end = ' ')
+            #print("BOOM", end = ' ')
             explosions += 1
             info[row][col]["status"] = "queried"
             #northwest
@@ -188,12 +190,14 @@ def advancedagent(matrix):
 
             totalQueries += 1
 
+        reassess(info, safeQueue)
         #we're done here
         if totalQueries == totalCells:
-            print("total queries == total cells, stop here")
+            #print("total queries == total cells, stop here")
             break
 
-    print(goodQueries / totalQueries)
+    #print(goodQueries / totalQueries)
+    return (goodQueries / totalQueries)
 
 #returns a random hidden cell
 def findRandomHidden(info):
@@ -211,3 +215,28 @@ def findRandomHidden(info):
         num = random.randint(0, len(randomList)-1)
         #print("returned" + " " + str(randomList[num]))
         return randomList[num]
+
+#reasses every safe spot to see if any new spots can be revealed
+def reassess(info, safeQueue):
+    for i in range(len(info)):
+        for j in range(len(info)):
+            
+            if info[i][j]["safe"] and not info[i][j]["complete"]:
+                info[i][j]["known_mines"].clear()
+                neighbors = getListOfValidNeighbors(info, i, j)
+                for neighbor in neighbors:
+                    nRow = neighbor[0]
+                    nCol = neighbor[1]
+                    if info[nRow][nCol]["status"] == "queried" and info[nRow][nCol]["safe"] == False:
+                        info[i][j]["known_mines"].add((nRow, nCol)) 
+                #new cell completed?
+                if info[i][j]["surrounding_clued_mines"] == len(info[i][j]["known_mines"]):
+                    info[i][j]["complete"] = True
+                    neighbors = getListOfValidNeighbors(info, i, j)
+                    for neighbor in neighbors:
+                        nRow = neighbor[0]
+                        nCol = neighbor[1]
+                        if (nRow, nCol) not in info[i][j]["known_mines"] and info[nRow][nCol]["safe"] == "inconclusive" and info[nRow][nCol]["status"] == "unqueried":
+                            info[nRow][nCol]["safe"] = True
+                            info[nRow][nCol]["status"] = "in queue"
+                            safeQueue.append((nRow, nCol))
