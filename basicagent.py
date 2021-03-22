@@ -19,7 +19,7 @@ def basicagent(matrix, mines):
     while not finished:
         nextCell = ()
         if not safeQueue:
-            nextCell = findRandomHidden(info)
+            nextCell = findBetterDecision(info)
         else:
             nextCell = safeQueue.pop()
 
@@ -135,58 +135,30 @@ def findRandomHidden(info):
         return randomList[num]
 def findBetterDecision(info): 
     smallestNum = 8
+    listCoord = []
+    maxNum = 0
+    coord = []
     #for the infor matrix, find the dictionary that has the smallest surrounding clue mines attribute, 
     for i in range(len(info)):
         for j in range(len(info)):
             #when the surrounding clued mines is at 1, it would be the smallest, which we can just return the neighbor of the cell
-            if info[i][j]["surrounding_clued_mines"] == 1:
-                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)-1)
-                #west
-                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
-                    return (len(info), len(info)-1)
-                #southwest
-                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)-1)
-                #north
-                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
-                    return (len(info)-1, len(info))
-                #south
-                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
-                    return (len(info)+1, len(info))
-                #northesat
-                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)+1)
-                #east
-                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
-                    return (len(info), len(info)+1)
-                #southeast
-                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)+1)
+            if info[i][j]["clue"] == 0:
+                listCoord = getNeighbors(info, i, j)
+                for coordinate in listCoord:
+                    if info[coordinate[0]][coordinate[1]]["status"] == "unqueried":
+                        return coordinate
             #with the nested for loop to keep track of the smallest "surrounding_clued_mines" attribute and after the smallest num have been found return the cell's neighbor
-            elif info[i][j]["surrounding_clued_mines"] <= smallestNum:
-                smallestNum = info[i][j]["surrounding_clued_mines"] 
-                #northwest
-                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)-1)
-                #west
-                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
-                    return (len(info), len(info)-1)
-                #southwest
-                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)-1)
-                #north
-                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
-                    return (len(info)-1, len(info))
-                #south
-                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
-                    return (len(info)+1, len(info))
-                #northesat
-                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)+1)
-                #east
-                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
-                    return (len(info), len(info)+1)
-                #southeast
-                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)+1)     
+            elif type(info[i][j]["clue"]) is int and info[i][j]["clue"] <= smallestNum and info[i][j]["clue"] > 0:
+                smallestNum = info[i][j]["clue"] 
+    for i in range(len(info)):
+        for j in range(len(info)):
+            if info[i][j]["clue"] == smallestNum:
+                coord.append((i, j))
+    for i in coord:
+        if info[i[0]][i[1]]["hidden_neighbors"] > maxNum:
+            maxNum = info[i[0]][i[1]]["hidden_neighbors"]
+    for i in coord:
+        if info[i[0]][i[1]]["status"] == "unqueried" and info[i[0]][i[1]]["hidden_neighbors"] == maxNum:
+            return i
+
+            

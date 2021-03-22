@@ -20,4 +20,4 @@ for i in range(400):
     advancedTotal += advancedagent(board, 40)
 
 print(basicTotal / 400.0)
-print(advancedTotal / 400.0)
+#print(advancedTotal / 400.0)
