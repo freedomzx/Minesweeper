@@ -133,4 +133,60 @@ def findRandomHidden(info):
         #print("returned" + " " + str(randomList[num]))
         #print(info[randomList[num][0]][randomList[num][1]])
         return randomList[num]
-    
+def findBetterDecision(info): 
+    smallestNum = 8
+    #for the infor matrix, find the dictionary that has the smallest surrounding clue mines attribute, 
+    for i in range(len(info)):
+        for j in range(len(info)):
+            #when the surrounding clued mines is at 1, it would be the smallest, which we can just return the neighbor of the cell
+            if info[i][j]["surrounding_clued_mines"] == 1:
+                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
+                    return (len(info)-1, len(info)-1)
+                #west
+                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
+                    return (len(info), len(info)-1)
+                #southwest
+                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
+                    return (len(info)+1, len(info)-1)
+                #north
+                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
+                    return (len(info)-1, len(info))
+                #south
+                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
+                    return (len(info)+1, len(info))
+                #northesat
+                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
+                    return (len(info)-1, len(info)+1)
+                #east
+                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
+                    return (len(info), len(info)+1)
+                #southeast
+                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
+                    return (len(info)+1, len(info)+1)
+            #with the nested for loop to keep track of the smallest "surrounding_clued_mines" attribute and after the smallest num have been found return the cell's neighbor
+            elif info[i][j]["surrounding_clued_mines"] <= smallestNum:
+                smallestNum = info[i][j]["surrounding_clued_mines"] 
+                #northwest
+                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
+                    return (len(info)-1, len(info)-1)
+                #west
+                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
+                    return (len(info), len(info)-1)
+                #southwest
+                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
+                    return (len(info)+1, len(info)-1)
+                #north
+                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
+                    return (len(info)-1, len(info))
+                #south
+                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
+                    return (len(info)+1, len(info))
+                #northesat
+                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
+                    return (len(info)-1, len(info)+1)
+                #east
+                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
+                    return (len(info), len(info)+1)
+                #southeast
+                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
+                    return (len(info)+1, len(info)+1)     
