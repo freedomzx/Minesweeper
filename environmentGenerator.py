@@ -86,8 +86,7 @@ def fillInInfo(matrix, d):
 
 
             #FOR USE IN ADVANCED AGENT
-            dic["mines_set"] = set()
-            dic["complete"] = False
+            dic["potential_mines"] = set()
 
             toAdd.append(dic)
         toReturn.append(toAdd)

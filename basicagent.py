@@ -45,7 +45,7 @@ def basicagent(matrix, mines):
                         info[nrow][ncol]["status"] = "flagged"
                         flags += 1
                         totalQueries += 1
-                        info[row][col]["revealed_mines"] += 1
+                        #info[row][col]["revealed_mines"] += 1
                         #let neighbors know of this change
                         far = getNeighbors(info, nrow, ncol)
                         for f in far:
@@ -68,7 +68,7 @@ def basicagent(matrix, mines):
                         info[nrow][ncol]["safe"] = True
                         info[nrow][ncol]["status"] = "in queue"
                         safeQueue.append((nrow, ncol))
-                        info[row][col]["revealed_safe"] += 1
+                        #info[row][col]["revealed_safe"] += 1
                         #let neighbors know new safe
                         far = getNeighbors(info, nrow, ncol) 
                         for f in far:
