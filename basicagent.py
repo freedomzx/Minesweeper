@@ -113,7 +113,7 @@ def basicagent(matrix, mines):
                 #print("\n")
                     
 
-    print("Success rate: " + str(flags / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(flags) + "\nTotal Queries: " + str(totalQueries))
+    #print("Success rate: " + str(flags / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(flags) + "\nTotal Queries: " + str(totalQueries))
     return (flags / mines)
 
 #returns a random hidden cell
@@ -133,32 +133,38 @@ def findRandomHidden(info):
         #print("returned" + " " + str(randomList[num]))
         #print(info[randomList[num][0]][randomList[num][1]])
         return randomList[num]
+
 def findBetterDecision(info): 
-    smallestNum = 8
+    smallestChance = 1.0
+    bestCoord = ()
     listCoord = []
     maxNum = 0
-    coord = []
     #for the infor matrix, find the dictionary that has the smallest surrounding clue mines attribute, 
     for i in range(len(info)):
         for j in range(len(info)):
-            #when the surrounding clued mines is at 1, it would be the smallest, which we can just return the neighbor of the cell
+            #when the surrounding clued mines is at 0, it would be the smallest, which we can just return the neighbor of the cell
             if info[i][j]["clue"] == 0:
                 listCoord = getNeighbors(info, i, j)
                 for coordinate in listCoord:
-                    if info[coordinate[0]][coordinate[1]]["status"] == "unqueried":
+                    if info[coordinate[0]][coordinate[1]]["status"] == "unqueried" and info[coordinate[0]][coordinate[1]]["safe"] == "inconclusive":
                         return coordinate
-            #with the nested for loop to keep track of the smallest "surrounding_clued_mines" attribute and after the smallest num have been found return the cell's neighbor
-            elif type(info[i][j]["clue"]) is int and info[i][j]["clue"] <= smallestNum and info[i][j]["clue"] > 0:
-                smallestNum = info[i][j]["clue"] 
-    for i in range(len(info)):
-        for j in range(len(info)):
-            if info[i][j]["clue"] == smallestNum:
-                coord.append((i, j))
-    for i in coord:
-        if info[i[0]][i[1]]["hidden_neighbors"] > maxNum:
-            maxNum = info[i[0]][i[1]]["hidden_neighbors"]
-    for i in coord:
-        if info[i[0]][i[1]]["status"] == "unqueried" and info[i[0]][i[1]]["hidden_neighbors"] == maxNum:
-            return i
+
+            #find coordinate with smallest chance of picking random neighbor = mine
+            elif type(info[i][j]["clue"]) is int and info[i][j]["hidden_neighbors"] > info[i][j]["clue"]:
+                remaining_mines = info[i][j]["clue"] - info[i][j]["revealed_mines"]
+                chance = float(remaining_mines / info[i][j]["hidden_neighbors"])
+                if chance < smallestChance:
+                    smallestChance = chance
+                    bestCoord = (i, j)
+
+    if smallestChance == 1.0:
+        return findRandomHidden(info)
+
+    else:
+        neighbors = getNeighbors(info, bestCoord[0], bestCoord[1])
+        randomIndex = random.randint(0, len(neighbors)-1)
+        return neighbors[randomIndex]
+
+
 
             

@@ -2,8 +2,6 @@ from environmentGenerator import *
 from collections import deque
 import random
 
-
-
 def advancedagent(matrix, mines):
     #keep track of numbers
     #totalQueries = 0
@@ -38,7 +36,7 @@ def advancedagent(matrix, mines):
     while not finished:
         nextCell = ()
         if not safeQueue:
-            nextCell = findRandomHidden(info)
+            nextCell = findBetterDecision(info)
         else:
             nextCell = safeQueue.pop()
 
@@ -157,7 +155,7 @@ def advancedagent(matrix, mines):
         #ADVANCED: assess equations
         assess(info, equations, safeQueue, nums)
 
-    print("Success rate: " + str(nums["flags"] / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(nums["flags"]) + "\nTotal Queries: " + str(nums["totalQueries"]))
+    #print("Success rate: " + str(nums["flags"] / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(nums["flags"]) + "\nTotal Queries: " + str(nums["totalQueries"]))
     return (nums["flags"] / mines)
 
 #returns a random hidden cell
@@ -269,63 +267,37 @@ def assess(info, equations, safeQueue, nums):
                                 fcol = f[1]
                                 info[frow][fcol]["hidden_neighbors"] -= 1
                                 info[frow][fcol]["revealed_mines"] += 1
+
 def findBetterDecision(info): 
-    smallestNum = 8
+    smallestChance = 1.0
+    bestCoord = ()
+    listCoord = []
+    maxNum = 0
     #for the infor matrix, find the dictionary that has the smallest surrounding clue mines attribute, 
     for i in range(len(info)):
         for j in range(len(info)):
-            #when the surrounding clued mines is at 1, it would be the smallest, which we can just return the neighbor of the cell
-            if info[i][j]["surrounding_clued_mines"] == 1:
-                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)-1)
-                #west
-                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
-                    return (len(info), len(info)-1)
-                #southwest
-                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)-1)
-                #north
-                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
-                    return (len(info)-1, len(info))
-                #south
-                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
-                    return (len(info)+1, len(info))
-                #northesat
-                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)+1)
-                #east
-                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
-                    return (len(info), len(info)+1)
-                #southeast
-                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)+1)
-            #with the nested for loop to keep track of the smallest "surrounding_clued_mines" attribute and after the smallest num have been found return the cell's neighbor
-            elif info[i][j]["surrounding_clued_mines"] <= smallestNum:
-                smallestNum = info[i][j]["surrounding_clued_mines"] 
-                #northwest
-                if checkValidIndex(info, len(info)-1, len(info)-1) and info[len(info)-1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)-1)
-                #west
-                if checkValidIndex(info, len(info), len(info)-1) and info[len(info)][len(info)-1]["status"] == "unqueried":
-                    return (len(info), len(info)-1)
-                #southwest
-                if checkValidIndex(info, len(info)+1, len(info)-1) and info[len(info)+1][len(info)-1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)-1)
-                #north
-                if checkValidIndex(info, len(info)-1, len(info)) and info[len(info)-1][len(info)]["status"] == "unqueried":
-                    return (len(info)-1, len(info))
-                #south
-                if checkValidIndex(info, len(info)+1, len(info)) and info[len(info)+1][len(info)]["status"] == "unqueried":
-                    return (len(info)+1, len(info))
-                #northesat
-                if checkValidIndex(info, len(info)-1, len(info)+1) and info[len(info)-1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)-1, len(info)+1)
-                #east
-                if checkValidIndex(info, len(info), len(info)+1) and info[len(info)][len(info)+1]["status"] == "unqueried":
-                    return (len(info), len(info)+1)
-                #southeast
-                if checkValidIndex(info, len(info)+1, len(info)+1) and info[len(info)+1][len(info)+1]["status"] == "unqueried":
-                    return (len(info)+1, len(info)+1) 
+            #when the surrounding clued mines is at 0, it would be the smallest, which we can just return the neighbor of the cell
+            if info[i][j]["clue"] == 0:
+                listCoord = getNeighbors(info, i, j)
+                for coordinate in listCoord:
+                    if info[coordinate[0]][coordinate[1]]["status"] == "unqueried" and info[coordinate[0]][coordinate[1]]["safe"] == "inconclusive":
+                        return coordinate
+
+            #find coordinate with smallest chance of picking random neighbor = mine
+            elif type(info[i][j]["clue"]) is int and info[i][j]["hidden_neighbors"] > info[i][j]["clue"]:
+                remaining_mines = info[i][j]["clue"] - info[i][j]["revealed_mines"]
+                chance = float(remaining_mines / info[i][j]["hidden_neighbors"])
+                if chance < smallestChance:
+                    smallestChance = chance
+                    bestCoord = (i, j)
+
+    if smallestChance == 1.0:
+        return findRandomHidden(info)
+
+    else:
+        neighbors = getNeighbors(info, bestCoord[0], bestCoord[1])
+        randomIndex = random.randint(0, len(neighbors)-1)
+        return neighbors[randomIndex]
 
 
 

@@ -8,16 +8,14 @@ from advancedagent import *
 #advancedagent(board, 40)
 
 basicTotal = 0
-for i in range(400):
+for i in range(150):
     board = generate(16, 40)
     basicTotal += basicagent(board, 40)
 
-
-
 advancedTotal = 0
-for i in range(400):
+for i in range(150):
     board = generate(16, 40)
     advancedTotal += advancedagent(board, 40)
 
-print(basicTotal / 400.0)
-#print(advancedTotal / 400.0)
+print(basicTotal / 150.0)
+print(advancedTotal / 150.0)
