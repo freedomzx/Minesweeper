@@ -11,6 +11,7 @@ def advancedagent(matrix, mines):
     nums = {}
     nums["totalQueries"] = 0
     nums["flags"] = 0
+    #turn = 1
 
     #matrix of dictionaries contraining info for each cell
     info = fillInInfo(matrix, len(matrix))
@@ -34,6 +35,7 @@ def advancedagent(matrix, mines):
 
     finished = False
     while not finished:
+        #print("Turn {}".format(turn))
         nextCell = ()
         if not safeQueue:
             nextCell = findBetterDecision(info)
@@ -154,6 +156,7 @@ def advancedagent(matrix, mines):
 
         #ADVANCED: assess equations
         assess(info, equations, safeQueue, nums)
+        #turn+=1
 
     #print("Success rate: " + str(nums["flags"] / mines) + "\nExplosions: " + str(explosions) + "\nFlags: " + str(nums["flags"]) + "\nTotal Queries: " + str(nums["totalQueries"]))
     return (nums["flags"] / mines)
@@ -232,7 +235,7 @@ def assess(info, equations, safeQueue, nums):
                             info[crow][ccol]["safe"] = True
                             info[crow][ccol]["status"] = "in queue"
                             safeQueue.append((crow, ccol))
-                            #print("good job!")
+                            #print("New info means that a new safe cell has been found.  Updating neighbors...")
 
                             removeSafeExcept(info, equations, crow, ccol, i, j)
 
@@ -256,7 +259,7 @@ def assess(info, equations, safeQueue, nums):
                             info[crow][ccol]["status"] = "flagged"
                             nums["flags"] += 1
                             nums["totalQueries"] += 1
-                            #print("good job!")
+                            #print("New info means that a new mine has been flagged.  Updating neighbors...")
 
                             removeMineExcept(info, equations, crow, ccol, i, j)
 
